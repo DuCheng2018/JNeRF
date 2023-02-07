@@ -2,6 +2,7 @@ import open3d as o3d
 import jittor as jt
 import numpy as np
 import mcubes
+import skimage
 import os
 import argparse
 from plyfile import PlyData, PlyElement
@@ -26,8 +27,8 @@ def mesh():
     )
     parser.add_argument(
         "--mcube_smooth",
-        type=bool,
-        default=False,
+        type=int,
+        default=0,
         help="use pymcube.smooth function"
     )
     args = parser.parse_args()
@@ -75,7 +76,9 @@ def mesh():
         sigma = mcubes.smooth(sigma)
         vertices, triangles = mcubes.marching_cubes(sigma, 0)
     else:
-        vertices, triangles = mcubes.marching_cubes(sigma, 0.5)
+        #  vertices, triangles, _, _ = skimage.measure.marching_cubes(sigma, level=0.005)
+        #  triangles = triangles[...,::-1]
+        vertices, triangles = mcubes.marching_cubes(sigma, 0.005)
 
     vertices_ = (vertices/N).astype(np.float32)
     x_ = (ymax - ymin) * vertices_[:, 1] + ymin
@@ -99,7 +102,7 @@ def mesh():
     face['vertex_indices'] = mesh.triangles
     vertices_ = np.asarray(mesh.vertices).astype(np.float32)
     vertices_.dtype = [('x', 'f4'), ('y', 'f4'), ('z', 'f4')]
-    # PlyData([PlyElement.describe(vertices_[:, 0], 'vertex'), 
+    # PlyData([PlyElement.describe(vertices_[:, 0], 'vertex'),
     #         PlyElement.describe(face, 'face')]).write(os.path.join(mesh_dir, f'{"mesh-denoise"}.ply'))
     # print("mesh denoise generated mesh-denoise.ply")
     vertices_ = np.asarray(mesh.vertices).astype(np.float32)
