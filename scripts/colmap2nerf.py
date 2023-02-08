@@ -44,6 +44,7 @@ def parse_args():
 	parser.add_argument("--vocab_path", default="", help="Vocabulary tree path.")
 	parser.add_argument("--overwrite", action="store_true", help="Do not ask for confirmation for overwriting existing images and COLMAP data.")
 	parser.add_argument("--mask_categories", nargs="*", type=str, default=[], help="Object categories that should be masked out from the training images. See `scripts/category2id.json` for supported categories.")
+	parser.add_argument("--abs_pose_max_error", type=float, default=12.0, help="max abs pose error during reconstruction.")
 	args = parser.parse_args()
 	return args
 
@@ -130,7 +131,7 @@ def run_colmap(args):
 	except:
 		pass
 	do_system(f"mkdir {sparse}")
-	do_system(f"{colmap_binary} mapper --database_path {db} --image_path {images} --output_path {sparse}")
+	do_system(f"{colmap_binary} mapper --Mapper.abs_pose_max_error {args.abs_pose_max_error} --database_path {db} --image_path {images} --output_path {sparse}")
 	do_system(f"{colmap_binary} bundle_adjuster --input_path {sparse}/0 --output_path {sparse}/0 --BundleAdjustment.refine_principal_point 1")
 	try:
 		shutil.rmtree(text)
