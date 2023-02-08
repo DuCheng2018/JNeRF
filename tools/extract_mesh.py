@@ -76,7 +76,9 @@ def mesh():
         sigma = mcubes.smooth(sigma)
         vertices, triangles = mcubes.marching_cubes(sigma, 0)
     else:
-        #  vertices, triangles, _, _ = skimage.measure.marching_cubes(sigma, level=0.005)
+        #  voxel_size = list((bbox[1]-bbox[0]) / np.array(sigma.shape))
+        #  voxel_size = [0.0057, 0.0057, 0.0057]
+        #  vertices, triangles, _, _ = skimage.measure.marching_cubes(sigma, level=0.005, spacing=voxel_size)
         #  triangles = triangles[...,::-1]
         vertices, triangles = mcubes.marching_cubes(sigma, 0.005)
 
