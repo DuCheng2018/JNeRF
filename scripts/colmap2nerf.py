@@ -121,8 +121,10 @@ def run_colmap(args):
 		sys.exit(1)
 	if os.path.exists(db):
 		os.remove(db)
-	do_system(f"{colmap_binary} feature_extractor --ImageReader.camera_model {args.colmap_camera_model} --ImageReader.camera_params \"{args.colmap_camera_params}\" --SiftExtraction.estimate_affine_shape=true --SiftExtraction.domain_size_pooling=true --ImageReader.single_camera 1 --database_path {db} --image_path {images}")
-	match_cmd = f"{colmap_binary} {args.colmap_matcher}_matcher --SiftMatching.guided_matching=true --database_path {db}"
+	#  do_system(f"{colmap_binary} feature_extractor --ImageReader.camera_model {args.colmap_camera_model} --ImageReader.camera_params \"{args.colmap_camera_params}\" --SiftExtraction.estimate_affine_shape=true --SiftExtraction.domain_size_pooling=true --ImageReader.single_camera 1 --database_path {db} --image_path {images}")
+	#  match_cmd = f"{colmap_binary} {args.colmap_matcher}_matcher --SiftMatching.guided_matching=true --database_path {db}"
+	do_system(f"{colmap_binary} feature_extractor --ImageReader.camera_model {args.colmap_camera_model} --SiftExtraction.estimate_affine_shape=false --SiftExtraction.domain_size_pooling=false --ImageReader.single_camera 1 --database_path {db} --image_path {images}")
+	match_cmd = f"{colmap_binary} {args.colmap_matcher}_matcher --database_path {db}"
 	if args.vocab_path:
 		match_cmd += f" --VocabTreeMatching.vocab_tree_path {args.vocab_path}"
 	do_system(match_cmd)
@@ -132,7 +134,8 @@ def run_colmap(args):
 		pass
 	do_system(f"mkdir {sparse}")
 	do_system(f"{colmap_binary} mapper --Mapper.abs_pose_max_error {args.abs_pose_max_error} --database_path {db} --image_path {images} --output_path {sparse}")
-	do_system(f"{colmap_binary} bundle_adjuster --input_path {sparse}/0 --output_path {sparse}/0 --BundleAdjustment.refine_principal_point 1")
+	#  do_system(f"{colmap_binary} bundle_adjuster --input_path {sparse}/0 --output_path {sparse}/0 --BundleAdjustment.refine_principal_point 1")
+	do_system(f"{colmap_binary} bundle_adjuster --input_path {sparse}/0 --output_path {sparse}/0")
 	try:
 		shutil.rmtree(text)
 	except:
